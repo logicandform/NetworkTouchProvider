@@ -1,5 +1,6 @@
 from touch import Touch
 
+update_threshold = 5
 
 class TouchManager(object):
 
@@ -30,7 +31,7 @@ class TouchManager(object):
             if current_touch.is_ready():
                 self.socket_connection.send_touch_down(current_touch)
 
-        elif current_touch.is_ready():
+        elif current_touch.is_ready() and abs(current_touch.xPos - x_value) >= update_threshold:
             current_touch.xPos = x_value
             self.socket_connection.send_touch_moved(current_touch)
 
@@ -43,7 +44,7 @@ class TouchManager(object):
             if current_touch.is_ready():
                 self.socket_connection.send_touch_down(current_touch)
 
-        elif current_touch.is_ready():
+        elif current_touch.is_ready() and abs(current_touch.yPos - y_value) >= update_threshold:
             current_touch.yPos = y_value
             self.socket_connection.send_touch_moved(current_touch)
 
