@@ -13,7 +13,7 @@ screen = 1
 # 3. Set the broadcast IP for your router, usually ends in .255
 host = '10.58.73.255'
 # 4. Set the port for which to broadcast touch packets
-port = 12222
+port = 12221
 
 
 # Touch codes
