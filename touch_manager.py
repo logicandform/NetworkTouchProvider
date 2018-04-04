@@ -18,15 +18,15 @@ class TouchManager(object):
         self.active_touches[self.focused_touch_index] = Touch(touch_id)
 
     def handle_touch_up(self):
-        if self.focused_touch_code >= len(active_touches):
+        if self.focused_touch_code not in active_touches:
             return
-            
+
         current_touch = self.active_touches.pop(self.focused_touch_index)
         if current_touch.is_ready():
             self.socket_connection.send_touch_up(current_touch)
 
     def handle_move_x(self, touch_event):
-        if self.focused_touch_code >= len(active_touches):
+        if self.focused_touch_code not in active_touches:
             return
 
         current_touch = self.active_touches[self.focused_touch_index]
@@ -42,7 +42,7 @@ class TouchManager(object):
             self.socket_connection.send_touch_moved(current_touch)
 
     def handle_move_y(self, touch_event):
-        if self.focused_touch_code >= len(active_touches):
+        if self.focused_touch_code not in active_touches:
             return
 
         current_touch = self.active_touches[self.focused_touch_index]
