@@ -1,5 +1,6 @@
 import evdev
 import time
+import sys
 from threading import Timer
 from socket_connection import SocketConnection
 from touch_manager import TouchManager
@@ -58,6 +59,7 @@ def start_event_loop(manager):
         manager.finish()
         check_for_device()
     except:
+        print "Unexpected error:", sys.exc_info()[0]
         # Close the socket connection
         manager.finish()
 
