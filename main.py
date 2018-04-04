@@ -1,11 +1,13 @@
-import evdev as e
+import evdev
+import time
+from threading import Timer
 from socket_connection import SocketConnection
 from touch_manager import TouchManager
 
 # Configuration steps:
 
 # 1. Set the event# file that corresponds to the connected Planar screen
-device = e.InputDevice('/dev/input/event1')
+input_connection = '/dev/input/event0'
 # 2. Set the screen number
 screen = 1
 # 3. Set the broadcast IP for your router, usually ends in .255
@@ -22,30 +24,44 @@ x_move_code = 53
 y_move_code = 54
 
 
+def check_for_device():
+    if evdev.util.is_device(input_connection):
+        socket_connection = SocketConnection(host, port, screen)
+        touch_manager = TouchManager(socket_connection)
+        start_event_loop(touch_manager)
+    else:
+        time.sleep(15)
+        check_for_device()
+
+
 def start_event_loop(manager):
-    # Connect to device's input file
-    device.grab()
+    try:
+        # Connect to input connection
+        device = evdev.InputDevice(input_connection)
+        device.grab()
 
-    # Parse events received from the Planar screen
-    for event in device.read_loop():
-        if event.code == focused_touch_code:
-            manager.focused_touch_index = event.value
-        elif event.code == new_touch_code:
-            if event.value == touch_end_code:
-                manager.handle_touch_up()
-            else:
-                manager.handle_touch_down(event)
-        elif event.code == x_move_code:
-            manager.handle_move_x(event)
-        elif event.code == y_move_code:
-            manager.handle_move_y(event)
-
-    # Close the socket connection
-    manager.finish()
+        # Parse events received from the Planar screen
+        for event in device.read_loop():
+            if event.code == focused_touch_code:
+                manager.focused_touch_index = event.value
+            elif event.code == new_touch_code:
+                if event.value == touch_end_code:
+                    manager.handle_touch_up()
+                else:
+                    manager.handle_touch_down(event)
+            elif event.code == x_move_code:
+                manager.handle_move_x(event)
+            elif event.code == y_move_code:
+                manager.handle_move_y(event)
+    except IOError:
+        # Close the socket connection
+        manager.finish()
+        check_for_device()
+    except:
+        # Close the socket connection
+        manager.finish()
 
 
 # Ensure main is only run once
 if __name__ == "__main__":
-    socket_connection = SocketConnection(host, port, screen)
-    touch_manager = TouchManager(socket_connection)
-    start_event_loop(touch_manager)
+    check_for_device()
