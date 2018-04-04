@@ -1,67 +1,61 @@
-import evdev
-import time
-from threading import Timer
-from socket_connection import SocketConnection
-from touch_manager import TouchManager
+from touch import Touch
 
-# Configuration steps:
+update_threshold = 5
 
-# 1. Set the event# file that corresponds to the connected Planar screen
-input_connection = '/dev/input/event0'
-# 2. Set the screen number
-screen = 1
-# 3. Set the broadcast IP for your router, usually ends in .255
-host = '10.58.73.255'
-# 4. Set the port for which to broadcast touch packets
-port = 12222
+class TouchManager(object):
 
+    # A dictionary of the current touches on the screen. Indexed by their given focused_index from the Planar screen.
+    active_touches = {}
 
-# Touch codes
-focused_touch_code = 47
-new_touch_code = 57
-touch_end_code = -1
-x_move_code = 53
-y_move_code = 54
+    # The index of the currently focused touch provided by the Planar screen.
+    focused_touch_index = 0
 
+    def __init__(self, socket_connection):
+        self.socket_connection = socket_connection
 
-def check_for_device():
-    if evdev.util.is_device(input_connection):
-        socket_connection = SocketConnection(host, port, screen)
-        touch_manager = TouchManager(socket_connection)
-        start_event_loop(touch_manager)
-    else:
-        time.sleep(15)
-        check_for_device()
+    def handle_touch_down(self, touch_event):
+        touch_id = int(touch_event.value)
+        self.active_touches[self.focused_touch_index] = Touch(touch_id)
 
+    def handle_touch_up(self):
+        if self.focused_touch_code not in active_touches:
+            return
 
-def start_event_loop(manager):
-    try:
-        # Connect to input connection
-        device = evdev.InputDevice(input_connection)
-        device.grab()
+        current_touch = self.active_touches.pop(self.focused_touch_index)
+        if current_touch.is_ready():
+            self.socket_connection.send_touch_up(current_touch)
 
-        # Parse events received from the Planar screen
-        for event in device.read_loop():
-            if event.code == focused_touch_code:
-                manager.focused_touch_index = event.value
-            elif event.code == new_touch_code:
-                if event.value == touch_end_code:
-                    manager.handle_touch_up()
-                else:
-                    manager.handle_touch_down(event)
-            elif event.code == x_move_code:
-                manager.handle_move_x(event)
-            elif event.code == y_move_code:
-                manager.handle_move_y(event)
-    except IOError:
-        # Close the socket connection
-        manager.finish()
-        check_for_device()
-    except:
-        # Close the socket connection
-        manager.finish()
+    def handle_move_x(self, touch_event):
+        if self.focused_touch_code not in active_touches:
+            return
 
+        current_touch = self.active_touches[self.focused_touch_index]
+        x_value = int(touch_event.value)
 
-# Ensure main is only run once
-if __name__ == "__main__":
-    check_for_device()
+        if current_touch.needs_x():
+            current_touch.xPos = x_value
+            if current_touch.is_ready():
+                self.socket_connection.send_touch_down(current_touch)
+
+        elif current_touch.is_ready() and abs(current_touch.xPos - x_value) >= update_threshold:
+            current_touch.xPos = x_value
+            self.socket_connection.send_touch_moved(current_touch)
+
+    def handle_move_y(self, touch_event):
+        if self.focused_touch_code not in active_touches:
+            return
+
+        current_touch = self.active_touches[self.focused_touch_index]
+        y_value = int(touch_event.value)
+
+        if current_touch.needs_y():
+            current_touch.yPos = y_value
+            if current_touch.is_ready():
+                self.socket_connection.send_touch_down(current_touch)
+
+        elif current_touch.is_ready() and abs(current_touch.yPos - y_value) >= update_threshold:
+            current_touch.yPos = y_value
+            self.socket_connection.send_touch_moved(current_touch)
+
+    def finish(self):
+        self.socket_connection.close_connection()
