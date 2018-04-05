@@ -26,7 +26,7 @@ y_move_code = 54
 
 
 def check_for_device():
-    while !evdev.util.is_device(input_connection):
+    while not evdev.util.is_device(input_connection):
         time.sleep(20)
 
     # Input connection estabolished, start event loop
