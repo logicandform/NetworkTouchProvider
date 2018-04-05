@@ -26,14 +26,13 @@ y_move_code = 54
 
 
 def check_for_device():
-    if evdev.util.is_device(input_connection):
-        socket_connection = SocketConnection(host, port, screen)
-        touch_manager = TouchManager(socket_connection)
-        start_event_loop(touch_manager)
-    else:
-        time.sleep(15)
-        check_for_device()
+    while !evdev.util.is_device(input_connection):
+        time.sleep(20)
 
+    # Input connection estabolished, start event loop
+    socket_connection = SocketConnection(host, port, screen)
+    touch_manager = TouchManager(socket_connection)
+    start_event_loop(touch_manager)
 
 def start_event_loop(manager):
     try:
