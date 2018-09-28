@@ -40,7 +40,6 @@ def start_event_loop(manager):
     try:
         # Connect to input connection
         device = evdev.InputDevice(input_connection)
-        device.grab()
 
         # Parse events received from the Planar screen
         for event in device.read_loop():
