@@ -9,8 +9,6 @@ x_move_code = 53
 y_move_code = 54
 
 
-touch_screens = []
-
 async def handle_events(device):
     async for event in device.async_read_loop():
         if event.code == focused_touch_code:
@@ -28,7 +26,7 @@ async def handle_events(device):
 
 for device in [evdev.InputDevice(path) for path in evdev.list_devices()]:
     if device.name == "USBest Technology SiS HID Touch Controller":
-        print("Stored device path: " + device.path)
+        print("Listening to device at path: " + device.path)
         touch_screen = evdev.InputDevice(device.path)
         asyncio.ensure_future(handle_events(touch_screen))
 

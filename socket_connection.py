@@ -18,13 +18,12 @@ class SocketConnection(object):
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-            print('Socket created.')
         except socket.error as msg:
             print('Could not create socket. Socket error ' + str(msg[0]) + ' message ' + msg[1])
             sys.exit()
         try:
             self.socket.bind((host, port))
-            print("Broadcasting touches...")
+            print('Socket bound to port: ' + str(port))
         except socket.error as msg:
             print('Bind failed: ' + str(msg))
             sys.exit()
