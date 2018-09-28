@@ -1,9 +1,9 @@
 import evdev
 import time
 import sys
-from threading import Timer
 from socket_connection import SocketConnection
 from touch_manager import TouchManager
+
 
 # Configuration steps:
 
@@ -12,9 +12,11 @@ input_connection = '/dev/input/event0'
 # 2. Set the screen number
 screen = 1
 # 3. Set the broadcast IP for your router, usually ends in .255
-host = '10.58.73.255'
+host = '192.168.1.255'
 # 4. Set the port for which to broadcast touch packets
-port = 12221
+port = 13001
+# 5. Set the name of the touch input device name (find device name using evdev)
+device = "USBest Technology SiS HID Touch Controller"
 
 
 # Touch codes
@@ -29,7 +31,7 @@ def check_for_device():
     while not evdev.util.is_device(input_connection):
         time.sleep(20)
 
-    # Input connection estabolished, start event loop
+    # Input connection established, start event loop
     socket_connection = SocketConnection(host, port, screen)
     touch_manager = TouchManager(socket_connection)
     start_event_loop(touch_manager)
