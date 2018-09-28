@@ -16,7 +16,7 @@ host = '192.168.1.255'
 # 4. Set the port for which to broadcast touch packets
 port = 13001
 # 5. Set the name of the touch input device name (find device name using evdev)
-device = "USBest Technology SiS HID Touch Controller"
+device_name = "USBest Technology SiS HID Touch Controller"
 
 
 # Touch codes
@@ -60,7 +60,7 @@ def start_event_loop(manager):
         manager.finish()
         check_for_device()
     except:
-        print "Unexpected error:", sys.exc_info()[0]
+        print("Unexpected error:" + sys.exc_info()[0])
         # Close the socket connection
         manager.finish()
 
