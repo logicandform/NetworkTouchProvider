@@ -11,7 +11,7 @@ screen = 1
 host = '192.168.1.255'
 # 3. Set the port for which to broadcast touch packets
 port = 13001
-# 4. Set the name of the touch input device name (find device name using evdev)
+# 4. Set the name of the touch input device name (find device name using evdev: `python -m evdev.evtest`)
 device_name = "USBest Technology SiS HID Touch Controller"
 
 
