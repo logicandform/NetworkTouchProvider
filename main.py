@@ -7,8 +7,8 @@ from touch_manager import TouchManager
 
 # 1. Set the screen number
 screen = 1
-# 2. Set the broadcast IP for your router, usually ends in .255
-host = '192.168.1.255'
+# 2. Set the broadcast IP for your router, or let socket detemine the address by using <broadcast>
+host = '<broadcast>'
 # 3. Set the port for which to broadcast touch packets
 port = 13001
 # 4. Set the name of the touch input device name (find device name using evdev: `python -m evdev.evtest`)

@@ -34,15 +34,15 @@ class SocketConnection(object):
         self.socket.sendto(data, (self.host, self.port))
 
     def send_touch_down(self, touch):
-        print('Touch ' + str(touch.identifier) + ' down at ' + str((touch.xPos, touch.yPos)))
+        # print('Touch ' + str(touch.identifier) + ' down at ' + str((touch.xPos, touch.yPos)))
         self.broadcast(touch_down_id, touch.xPos, touch.yPos, touch.identifier)
 
     def send_touch_up(self, touch):
-        print('Touch ' + str(touch.identifier) + ' up at ' + str((touch.xPos, touch.yPos)))
+        # print('Touch ' + str(touch.identifier) + ' up at ' + str((touch.xPos, touch.yPos)))
         self.broadcast(touch_up_id, touch.xPos, touch.yPos, touch.identifier)
 
     def send_touch_moved(self, touch):
-        print('Touch ' + str(touch.identifier) + ' moved to ' + str((touch.xPos, touch.yPos)))
+        # print('Touch ' + str(touch.identifier) + ' moved to ' + str((touch.xPos, touch.yPos)))
         self.broadcast(touch_move_id, touch.xPos, touch.yPos, touch.identifier)
 
     def close_connection(self):
