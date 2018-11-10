@@ -1,2 +1,3 @@
-# Project requires Python3.5
-## Install the following modules: asyncio, evdev, time, sys, socket
+# Project requires Linux & Python3.5
+
+### Install the following modules: asyncio, evdev, time, sys, socket
